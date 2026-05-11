@@ -1,0 +1,26 @@
+import numpy as np
+
+def otsu_method(im, th):
+    thresholded_im = np.zeros(im.shape)
+    thresholded_im[im >= th] = 1
+    
+    val_pixels1 = im[thresholded_im == 1]
+    val_pixels0 = im[thresholded_im == 0]
+    
+    miu_0 = np.mean(val_pixels0) if len(val_pixels0) > 0 else 0
+    miu_1 = np.mean(val_pixels1) if len(val_pixels1) > 0 else 0
+
+    nb_pixels = im.size
+    nb_pixels1 = np.count_nonzero(thresholded_im)
+    P1 = nb_pixels1 *1.0 / nb_pixels
+    P0 = 1 - P1
+
+    miu_G = np.mean(np.reshape(im, im.size))
+    r = P0*np.power(miu_0-miu_G, 2) + P1*np.power(miu_1-miu_G, 2) 
+    
+    r1 =P0*P1*np.power(miu_0-miu_1, 2)
+    
+    if abs(r-r1) >= 0.001: 
+        print(f'Warning: {r}, {r1}')
+
+    return r
